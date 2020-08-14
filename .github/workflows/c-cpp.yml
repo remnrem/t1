@@ -16,4 +16,4 @@ jobs:
     - name: make
       run: make
     - name: Upload somewhere else
-      run: hw1
+      run: ./hw1
