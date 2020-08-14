@@ -1,2 +1,2 @@
-hello: t1.cpp
-    g++ -o t1 t1.cpp
+hello: main.cpp
+    g++ -o hw1 main.cpp
