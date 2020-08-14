@@ -17,3 +17,5 @@ jobs:
       run: make
     - name: Upload somewhere else
       run: ./hw1
+    - name: test AWS
+      run: aws --version
