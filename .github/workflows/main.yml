@@ -6,8 +6,7 @@ on:
     - 'v*'
 
 jobs:
-
-job1:
+  job1:
     name: Create Release
     runs-on: ubuntu-latest
     outputs: 
