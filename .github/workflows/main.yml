@@ -46,9 +46,13 @@ job1:
       
       - name: Create tarball
         uses: master-atul/tar-action@v1.0.2
-        run: |
-          cd t1/build
-          tar -czvf ${{ matrix.os }}.tar.gz *
+        id: compress
+        with:
+          command: c
+          cwd: ./t1
+          files: |
+            ./build/hw1
+          outPath: hw1-${{ matrix.os }}.tar.gz
       
       - name: Upload assets
         id: upload-release-asset
