@@ -29,42 +29,9 @@ jobs:
         with:
           name: win-hw.zip
           path: ./win-hw.zip
-  macos-build:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Make
-        run: |
-             make 
-             tar cvzf mac-hw.tar.gz hw1
-      - uses: actions/upload-artifact@v2
-        with:
-          name: mac-hw.tar.gz
-          path: mac-hw.tar.gz
-  linux-build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: make
-        run: |
-          make 
-          wget http://zzz.bwh.harvard.edu/dist/ErmineLight.x86_64
-          wget http://zzz.bwh.harvard.edu/dist/ErmineLight.x86_64.lic
-          echo ${{ secrets.ERMINE_LIC }} >> ErmineLight.x86_64.lic
-          echo >> ErmineLight.x86_64.lic
-          chmod a+x ErmineLight.x86_64
-          export ERMINE_HOME=${HOME}/.ermine
-          mkdir ${HOME}/.ermine
-          cp ErmineLight.x86_64.lic ${HOME}/.ermine
-          ./ErmineLight.x86_64 hw1 --output=hw1s
-          tar cvzf ubuntu-hw.tar.gz hw1 hw1s
-      - uses: actions/upload-artifact@v2
-        with:
-          name: ubuntu-hw.tar.gz
-          path: ubuntu-hw.tar.gz
   release:
     runs-on: ubuntu-latest
-    needs: [linux-build,macos-build,windows-build]
+    needs: [windows-build]
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v2
@@ -91,26 +58,6 @@ jobs:
           mv mac-hw.tar.gz/mac-hw.tar.gz mac_hw.tar.gz
           mv ubuntu-hw.tar.gz/ubuntu-hw.tar.gz ubuntu_hw.tar.gz
           mv win-hw.zip/win-hw.zip win_hw.zip
-      - name: Upload Release Asset Mac
-        id: upload-release-asset-mac
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: mac_hw.tar.gz
-          asset_name: mac_hw.tar.gz
-          asset_content_type: application/gzip
-      - name: Upload Release Asset Ubuntu
-        id: upload-release-asset-ubuntu 
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ubuntu_hw.tar.gz
-          asset_name: ubuntu_hw.tar.gz
-          asset_content_type: application/gzip
       - name: Upload Release Asset Win
         id: upload-release-asset-win
         uses: actions/upload-release-asset@v1
