@@ -20,7 +20,7 @@ jobs:
         with:
           msystem: MINGW64
           update: false
-          install: zip mingw-w64-x86_64-toolchain mingw-w64-x86_64-zlib mingw-w64-x86_64-fftw
+          install: zip mingw-w64-x86_64-toolchain mingw-w64-x86_64-fftw mingw-w64-x86_64-zlib 
       - uses: actions/checkout@v2
       - run: |
           mingw32-make.exe 
