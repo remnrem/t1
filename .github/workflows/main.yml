@@ -1,4 +1,4 @@
-name: Release (hw1)
+name: Release (tw)
 
 on:
   push:
@@ -6,8 +6,7 @@ on:
     - 'v*'
 
 jobs:
-
-job1:
+  job1:
     name: Create Release
     runs-on: ubuntu-latest
     outputs: 
