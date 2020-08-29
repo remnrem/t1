@@ -36,7 +36,7 @@ jobs:
       - name: Make
         run: |
              make 
-             tar cvzf mac-hw.tar.gz hw
+             tar cvzf mac-hw.tar.gz hw1
       - uses: actions/upload-artifact@v2
         with:
           name: mac-luna.tar.gz
@@ -48,7 +48,7 @@ jobs:
       - name: make
         run: |
           make 
-          tar cvzf ubuntu-hw.tar.gz hw
+          tar cvzf ubuntu-hw.tar.gz hw1
           ls -lrt
       - uses: actions/upload-artifact@v2
         with:
