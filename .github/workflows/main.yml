@@ -49,14 +49,16 @@ jobs:
         run: |
           make 
           tar cvzf ubuntu-hw.tar.gz hw1
-          ls -lrt
           wget http://zzz.bwh.harvard.edu/dist/ErmineLight.x86_64
+          wget http://zzz.bwh.harvard.edu/dist/ErmineLight.x86_64.lic
+          echo ${{ secrets.ERMINE_LIC }} >> ErmineLight.x86_64.lic
+          echo >> ErmineLight.x86_64.lic
           chmod a+x ErmineLight.x86_64
           export ERMINE_HOME=${HOME}/.ermine
           mkdir ${HOME}/.ermine
-          echo ${{ secrets.ERMINE_LIC }} > ${HOME}/.ermine/ErmineLight.x86_64.lic
-          cat ${HOME}/.ermine/ErmineLight.x86_64.lic
+          cp ErmineLight.x86_64.lic ${HOME}/.ermine
           ./ErmineLight.x86_64
+          ls -lrt
       - uses: actions/upload-artifact@v2
         with:
           name: ubuntu-hw.tar.gz
