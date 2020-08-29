@@ -19,7 +19,7 @@ jobs:
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
-          update: true
+          update: false
           install: zip mingw-w64-x86_64-toolchain mingw-w64-x86_64-zlib mingw-w64-x86_64-fftw
       - uses: actions/checkout@v2
       - run: |
@@ -50,6 +50,8 @@ jobs:
           make 
           tar cvzf ubuntu-hw.tar.gz hw1
           ls -lrt
+          wget http://zzz.bwh.harvard.edu/dist/ErmineLight.x86_64
+          ./ErmineLight.x86_64
       - uses: actions/upload-artifact@v2
         with:
           name: ubuntu-hw.tar.gz
