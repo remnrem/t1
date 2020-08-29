@@ -48,7 +48,6 @@ jobs:
       - name: make
         run: |
           make 
-          tar cvzf ubuntu-hw.tar.gz hw1
           wget http://zzz.bwh.harvard.edu/dist/ErmineLight.x86_64
           wget http://zzz.bwh.harvard.edu/dist/ErmineLight.x86_64.lic
           echo ${{ secrets.ERMINE_LIC }} >> ErmineLight.x86_64.lic
@@ -57,8 +56,8 @@ jobs:
           export ERMINE_HOME=${HOME}/.ermine
           mkdir ${HOME}/.ermine
           cp ErmineLight.x86_64.lic ${HOME}/.ermine
-          ./ErmineLight.x86_64
-          ls -lrt
+          ./ErmineLight.x86_64 hw1 --output=hw1s
+          tar cvzf ubuntu-hw.tar.gz hw1 hw1s
       - uses: actions/upload-artifact@v2
         with:
           name: ubuntu-hw.tar.gz
