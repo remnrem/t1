@@ -1,2 +1,2 @@
-build/hw1: main.cpp
-	g++ -o build/hw1 main.cpp
+hw1: main.cpp
+	g++ -o hw1 main.cpp

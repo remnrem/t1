@@ -1,18 +1,65 @@
-name: Release (tw)
+name: hw-test CI/CD
 
 on:
   push:
-    tags:
-    - 'v*'
+    branches: master
+    tags: v*
+  pull_request:
+    branches: master
+    tags: v*
 
 jobs:
-  job1:
-    name: Create Release
-    runs-on: ubuntu-latest
-    outputs: 
-      upload_url: ${{ steps.create_release.outputs.upload_url }} 
-    
+  windows-build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
     steps:
+      - uses: actions/checkout@v2
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: zip mingw-w64-x86_64-toolchain mingw-w64-x86_64-zlib mingw-w64-x86_64-fftw
+      - uses: actions/checkout@v2
+      - run: |
+          mingw32-make.exe 
+          zip -j win-hw.zip *.exe /mingw64/bin/libfftw3-3.dll
+      - uses: actions/upload-artifact@v2
+        with:
+          name: win-hw.zip
+          path: ./win-hw.zip
+  macos-build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Make
+        run: |
+             make 
+             tar cvzf mac-hw.tar.gz hw
+      - uses: actions/upload-artifact@v2
+        with:
+          name: mac-luna.tar.gz
+          path: mac-luna.tar.gz
+  linux-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: make
+        run: |
+          make 
+          tar cvzf ubuntu-hw.tar.gz hw
+          ls -lrt
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ubuntu-luna.tar.gz
+          path: ubuntu-luna.tar.gz
+  release:
+    runs-on: ubuntu-latest
+    needs: [linux-build,macos-build,windows-build]
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v2
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -20,46 +67,49 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          draft: true
+          release_name: hw-release ${{ github.ref }}
+          draft: false
           prerelease: false
-
-  job2:
-    name: Build
-    needs: job1
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os:
-          - windows-latest
-          - ubuntu-latest
-          - macOS-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: make all
-        run: |
-          cd t1
-          mkdir build
-          make
-      
-      - name: Create tarball
-        uses: master-atul/tar-action@v1.0.2
-        id: compress
+      - uses: actions/download-artifact@v2
+        id: download
         with:
-          command: c
-          cwd: ./t1
-          files: |
-            ./build/hw1
-          outPath: hw1-${{ matrix.os }}.tar.gz
-      
-      - name: Upload assets
-        id: upload-release-asset
+          path: .   
+      - run: |
+          echo ${{steps.download.outputs.download-path}}
+          cd ${{steps.download.outputs.download-path}}
+          ls -lrt
+          ls -lrt mac-luna.tar.gz/
+          ls -lrt win-luna.zip/
+          mv mac-hw.tar.gz/mac-hw.tar.gz mac_hw.tar.gz
+          mv ubuntu-hw.tar.gz/ubuntu-hw.tar.gz ubuntu_hw.tar.gz
+          mv win-hw.zip/win-hw.zip win_hw.zip
+      - name: Upload Release Asset Mac
+        id: upload-release-asset-mac
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.job1.outputs.upload_url }}
-          asset_path: t1/build/${{ matrix.os }}.tar.gz
-          asset_name: ${{ matrix.os }}.tar.gz
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: mac_hw.tar.gz
+          asset_name: mac_hw.tar.gz
           asset_content_type: application/gzip
+      - name: Upload Release Asset Ubuntu
+        id: upload-release-asset-ubuntu 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ubuntu_hw.tar.gz
+          asset_name: ubuntu_hw.tar.gz
+          asset_content_type: application/gzip
+      - name: Upload Release Asset Win
+        id: upload-release-asset-win
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: win_hw.zip
+          asset_name: win_hw.zip
+asset_content_type: application/zip
