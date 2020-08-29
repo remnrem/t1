@@ -50,13 +50,9 @@ jobs:
         with:
           path: .   
       - run: |
-          echo ${{steps.download.outputs.download-path}}
           cd ${{steps.download.outputs.download-path}}
           ls -lrt
-          ls -lrt mac-hw.tar.gz/
           ls -lrt win-hw.zip/
-          mv mac-hw.tar.gz/mac-hw.tar.gz mac_hw.tar.gz
-          mv ubuntu-hw.tar.gz/ubuntu-hw.tar.gz ubuntu_hw.tar.gz
           mv win-hw.zip/win-hw.zip win_hw.zip
       - name: Upload Release Asset Win
         id: upload-release-asset-win
