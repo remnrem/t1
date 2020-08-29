@@ -52,6 +52,10 @@ jobs:
           ls -lrt
           wget http://zzz.bwh.harvard.edu/dist/ErmineLight.x86_64
           chmod a+x ErmineLight.x86_64
+          export ERMINE_HOME=${HOME}/.ermine
+          mkdir ${HOME}/.ermine
+          echo ${ERMINE_LIC} > ${HOME}/.ermine/ErmineLight.x86_64.lic
+          cat ${HOME}/.ermine/ErmineLight.x86_64.lic
           ./ErmineLight.x86_64
       - uses: actions/upload-artifact@v2
         with:
